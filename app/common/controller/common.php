@@ -13,12 +13,14 @@ use think\config;
 use tencent\Sender;
 class common
 {
-    protected $appid = "";
+    protected $secretKey = "";
     protected $appkey = "";
+    protected $signName = "";
     public function __construct()
     {
-        $this->appid = config::get("tencent_sender.sender_appid");
-        $this->appkey = config::get("tencent_sender.sender_appkey");
+        $this->secretKey = config::get("alidayu_sender.sender_secretKey");
+        $this->appkey = config::get("alidayu_sender.sender_appkey");
+        $this->signName = config::get("alidayu_sender.SignName");
     }
     /**
      * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
@@ -77,30 +79,31 @@ class common
      * @param $params
      * @return  Obj
      */
-    public function senderSms($phone,$templid,$params,$desc)
+    public function senderSms($phone,$param,$tpl_code)
     {
         $request = Request::instance();
         $request->param();
         //发送短信注册
-        //Loader::import("tencent\Sender",EXTEND_PATH);
-        import("tencent.Sender");
-        $sender = new Sender\SmsSingleSender($this->appid,$this->appkey);
-        //传入腾讯云的短信配置参数
-        $result = $sender->sendWithParam("86",$phone,$templid,$params,"","","");
-        if($result){
-            //组装数据
-            $array['code']=$params[0];
-            $array['phone']=$phone;
-            $array['date']=date("Y-m-d H:i:s");
-            $array['template']=$templid;
-            $array['desc']=$desc;
-            //记录发送的短信信息
-            $isSend=db("smsLog")->insert($array);
-            if($isSend){
-                return true;
-            }else{
-                return false;
-            }
+        import("alidayu.TopClient");
+        import("alidayu.AlibabaAliqinFcSmsNumSendRequest");
+        import("alidayu.RequestCheckUtil");
+        import("alidayu.ResultSet");
+        import("alidayu.TopLogger");
+        define('TOP_SDK_WORK_DIR', CACHE_PATH.'sms_tmp/');
+        define('TOP_SDK_DEV_MODE', false);
+        $c = new \TopClient;
+        $c ->appkey = $this->appkey;
+        $c ->secretKey = $this->secretKey;
+        $req = new \AlibabaAliqinFcSmsNumSendRequest;
+        $req ->setExtend( "" );
+        $req ->setSmsType( "normal" );
+        $req ->setSmsFreeSignName( $this->signName);
+        $req ->setSmsParam(json_encode($param));
+        $req ->setRecNum( $phone );
+        $req ->setSmsTemplateCode( $tpl_code );
+        $resp = $c ->execute( $req );
+        if ($resp['result']['success'] =='true' && $resp['result']['msg'] == 'OK'){
+            return true;
         }else{
             return false;
         }

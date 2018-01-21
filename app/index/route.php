@@ -15,8 +15,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 use think\Route;
-//API模块的路由绑定
+//分组路由定义
 Route::group(['method'=>"post"],function (){
-    Route::post("user/login","api/user/login");//用户登录
-    Route::post("user/sender","api/user/sender");//注册发送验证码
+    Route::post("index/index","index/index/index");//用户登录
 });

@@ -13,9 +13,10 @@ return [
     //是否强制使用路由
 //    'url_route_must' => true,
     //腾讯云的短信配置
-    'tencent_sender' => [
-        'sender_appid'   => '1400036385',
-        'sender_appkey'  => 'ef9526070a73212c0547908738dbbc67'
+    'alidayu_sender' => [
+        'sender_appkey'   => '24778820',
+        'sender_secretKey'  => '47620b575285f032e8d1595c31dd5f1e',
+        'SignName' =>'有券花'
     ],
     'baidu_map_key'      => '7pjv2qlebFh7vSXSO8GPWmfO84CLc2G8',
     'code_exp' => 10,//验证码过期时间

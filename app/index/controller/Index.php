@@ -9,6 +9,6 @@ class Index
     }
     public function index()
     {
-        return "123";
+        return "456";
     }
 }

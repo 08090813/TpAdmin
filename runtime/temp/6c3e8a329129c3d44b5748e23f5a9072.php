@@ -1,0 +1,68 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:68:"E:\phpStudy\WWW\youquanhua\public/../app/admin\view\login\index.html";i:1516523896;}*/ ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>通用-后台管理系统</title>
+    <link href="/static/admin/css/login.css" type="text/css" rel="stylesheet">
+    <link href="/static/public/layui/css/layui.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <div class="layui-container">
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4 layui-col-md-offset4">
+                <div id="login-box">
+                    <fieldset class="layui-elem-field layui-field-title">
+                        <legend>通用-后台管理系统</legend>
+                    </fieldset>
+                    <form class="layui-form" method="post">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="username" lay-verify="required" autocomplete="off" placeholder="请输入用户名" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">登录密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="password" lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">验证码</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="code" autocomplete="off" class="layui-input" placeholder="请输入验证码" style="width: 55%;float: left;">
+                                <img src="<?php echo url('Login/loginCode'); ?>" onclick="this.src = this.src+'?rand='+Math.random()" style="float: left;margin-left: 5%;" width="40%" height="38"/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block" style="margin-left: 50px;">
+                                <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="subBtn">立即登录</button>
+                            </div>
+                        </div>
+                    </form>
+                    <p style="text-align: center;color: #ccc;">©Copyright htt://www.zhangchao.name By 张超</p>
+                </div>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript" src="/static/public/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.config({
+        base: '/static/admin/js/module/'//模块存放的目录
+    }).use(['jquery','element','form','login'],function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            element = layui.element,
+            login = layui.login;
+        form.on("submit(subBtn)",function (data) {
+            //获取表单的值
+            var field = data.field;
+            login.login("<?php echo url('Login/doLogin'); ?>",field,$,"<?php echo url('Index/index'); ?>");
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

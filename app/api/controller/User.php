@@ -18,7 +18,6 @@ class User extends Controller
         $this->common = new common();
         parent::__construct($request);
     }
-
     /**
      * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
      * @name 用户登录
@@ -38,14 +37,20 @@ class User extends Controller
      * @return  Obj
      */
     public function sender(){
-        $result = $this->common->senderSms('18300856840',array('phone'=>'18300856840','code'=>'1456','time'=>3),'SMS_122410030');
-        if ($result){
-            $this->common->ajaxSuccess(200,"短信发送成功！");
+        $smsLog = db("zc_sms_log")->where(array('phone'=>['eq',input("post.phone","")]))->order("id desc")->field();
+        if (!$smsLog){
+            //判断短信是否过期
+            $result = $this->common->senderSms('18300856840',array('phone'=>'18300856840','code'=>'1456','time'=>3),'SMS_122410030');
+            if ($result){
+                $this->common->ajaxSuccess(200,"短信发送成功！");
+            }else{
+                $this->common->ajaxError(400,"短信发送失败！");
+            }
         }else{
-            $this->common->ajaxError(400,"短信发送失败！");
+            $this->common->ajaxSuccess("您的短信验证码还在有效期哟！");
         }
-    }
 
+    }
     /**
      * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
      * @name 用户注册

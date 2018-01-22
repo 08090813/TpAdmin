@@ -19,7 +19,6 @@ return [
         'SignName' =>'有券花'
     ],
     'baidu_map_key'      => '7pjv2qlebFh7vSXSO8GPWmfO84CLc2G8',
-    'code_exp' => 10,//验证码过期时间
     'order_count' => 5,//骑手最多可接订单数
     'head_img'  => "http://rider.dabaisz.com/uploads/",
     'default_head_img'  => "http://rider.dabaisz.com/uploads/headImg.png",//骑手默认头像

@@ -7,16 +7,29 @@
  */
 
 namespace app\api\controller;
+use app\api\model\Users;
+use think\Config;
 use think\Controller;
 use think\Request;
 use app\common\controller\common;
-class User extends Controller
+class User extends Base
 {
     protected $common;
+    protected $help;
+    protected $sign;
     public function __construct(Request $request = null)
     {
+        $this->help = new \my\helper();
         $this->common = new common();
         parent::__construct($request);
+        if (!$request->post("sign")){
+            $this->common->ajaxError(401,"缺少sign签名");
+        }
+        //验证sign
+        $this->sign=parent::verifySign($request->param(),$request->post("sign"));
+        if ($this->sign!==true){
+            $this->common->ajaxError(401,"sign签名错误",$this->sign);
+        }
     }
     /**
      * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
@@ -37,19 +50,28 @@ class User extends Controller
      * @return  Obj
      */
     public function sender(){
-        $smsLog = db("zc_sms_log")->where(array('phone'=>['eq',input("post.phone","")]))->order("id desc")->field();
-        if (!$smsLog){
-            //判断短信是否过期
-            $result = $this->common->senderSms('18300856840',array('phone'=>'18300856840','code'=>'1456','time'=>3),'SMS_122410030');
+        if ($this->help->isCaptcha(input("post.phone",""))){
+            //验证码还在有效期
+            $this->common->ajaxError(400,"您的验证码还在有效期、切勿重复操作！");
+        }
+        //生成验证码
+        $capcha = (int)rand(1000,9999);
+        //存入数据库
+        $data['desc']="用户注册发送验证码";
+        $data['captcha']=$capcha;
+        $data['phone']=input("post.phone","");
+        $data['date']=date("Y-m-d H:i:s");
+        $sendSms = db("smsLog")->insert($data);
+        if ($sendSms){
+            $result = $this->common->senderSms(input("post.phone",""),array('phone'=>input("post.phone",""),'code'=>$capcha,'time'=>\config("code_exp")),'SMS_122410030');
             if ($result){
                 $this->common->ajaxSuccess(200,"短信发送成功！");
             }else{
                 $this->common->ajaxError(400,"短信发送失败！");
             }
         }else{
-            $this->common->ajaxSuccess("您的短信验证码还在有效期哟！");
+            $this->common->ajaxError(400,"短信发送失败！");
         }
-
     }
     /**
      * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
@@ -59,6 +81,7 @@ class User extends Controller
      * @return  Obj
      */
     public function register(){
-
+        $user = new Users();
+        $user->register(array());
     }
 }

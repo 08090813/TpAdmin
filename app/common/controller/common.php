@@ -11,13 +11,16 @@ use think\Loader;
 use think\Request;
 use think\config;
 use tencent\Sender;
+use my\helper;
 class common
 {
     protected $secretKey = "";
     protected $appkey = "";
     protected $signName = "";
+    protected $help = "";
     public function __construct()
     {
+        $this->help = new  helper();
         $this->secretKey = config::get("alidayu_sender.sender_secretKey");
         $this->appkey = config::get("alidayu_sender.sender_appkey");
         $this->signName = config::get("alidayu_sender.SignName");
@@ -102,8 +105,14 @@ class common
         $req ->setRecNum( $phone );
         $req ->setSmsTemplateCode( $tpl_code );
         $resp = $c ->execute( $req );
-        if ($resp['result']['success'] =='true' && $resp['result']['msg'] == 'OK'){
-            return true;
+        $resp = (array)$resp;
+        if (isset($resp['result'])){
+            $resp = (array)$resp['result'];
+            if (isset($resp['success'])&&$resp['msg'] == 'OK'){
+                return true;
+            }else{
+                return false;
+            }
         }else{
             return false;
         }

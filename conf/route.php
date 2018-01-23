@@ -18,6 +18,6 @@ use think\Route;
 //分组路由定义
 Route::group(['method'=>"post"],function (){
     Route::post("user/login","api/user/login");//用户登录
-    Route::post("user/sender","api/user/sender");//用户登录
+    Route::post("user/sender","api/user/sender");//用户发送验证码
     Route::post("user/register","api/user/register");//用户注册
 });

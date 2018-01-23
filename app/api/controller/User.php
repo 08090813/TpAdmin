@@ -82,6 +82,7 @@ class User extends Base
      */
     public function register(){
         $user = new Users();
-        $user->register(array());
+        $result = $user->register(Request::instance()->param());
+        var_dump($result);die;
     }
 }

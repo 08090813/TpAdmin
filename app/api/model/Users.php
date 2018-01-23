@@ -19,9 +19,21 @@ class Users extends Model
      * @return  Obj
      */
     public function register($data){
-        $result = $this->allowField(true)->insert($data);
         $validate = Loader::validate('Users');
-        $msg = $validate->check($data);
-        var_dump($msg);
+        if (!$validate->check($data)){
+            return $validate->getError();
+        }
+        $result = $this->allowField(true)->save($data);
+    }
+
+    /**
+     * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
+     * @name 使用password_hash加密密码
+     * @version 1.0.0
+     * @funName setPasswordAttr
+     * @return  Obj
+     */
+    public function setPasswordAttr($value){
+        return password_hash($value,PASSWORD_BCRYPT);
     }
 }

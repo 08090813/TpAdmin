@@ -12,21 +12,24 @@ use think\Config;
 use think\Controller;
 use think\Request;
 use app\common\controller\common;
-class User extends Base
+use app\api\controller\Base;
+use my\helper;
+class User extends Controller
 {
     protected $common;
     protected $help;
     protected $sign;
     public function __construct(Request $request = null)
     {
-        $this->help = new \my\helper();
         $this->common = new common();
+        $base = new Base();
+        $this->help = new helper();
         parent::__construct($request);
         if (!$request->post("sign")){
             $this->common->ajaxError(401,"缺少sign签名");
         }
         //验证sign
-        $this->sign=parent::verifySign($request->param(),$request->post("sign"));
+        $this->sign=$base->verifySign($request->param(),$request->post("sign"));
         if ($this->sign!==true){
             $this->common->ajaxError(401,"sign签名错误",$this->sign);
         }
@@ -53,6 +56,11 @@ class User extends Base
         if ($this->help->isCaptcha(input("post.phone",""))){
             //验证码还在有效期
             $this->common->ajaxError(400,"您的验证码还在有效期、切勿重复操作！");
+        }
+        //检查用户是都已经注册
+        $phoneIsSet = db("users")->where("phone",input("post.phone"))->find();
+        if ($phoneIsSet){
+            $this->common->ajaxError(400,"您的手机号已经注册、可直接登录或找回密码！");
         }
         //生成验证码
         $capcha = (int)rand(1000,9999);
@@ -83,6 +91,10 @@ class User extends Base
     public function register(){
         $user = new Users();
         $result = $user->register(Request::instance()->param());
-        var_dump($result);die;
+        if ($result===true){
+            $this->common->ajaxSuccess(200,"注册成功、跳转登录！");
+        }else{
+            $this->common->ajaxError(400,$result);
+        }
     }
 }

@@ -31,7 +31,7 @@
                                 <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="菜单创建时间" class="layui-input">
                             </div>
                             <button class="layui-btn" id="searchBtn">立即搜索</button>
-                            <button class="layui-btn" id="add">添加菜单</button>
+                            <button class="layui-btn" id="addMenus">添加菜单</button>
                         </div>
                     </form>
                 </div>
@@ -73,7 +73,6 @@
         var $ = layui.$, active = {
             reload: function(){
                 var demoReload = $('#demoReload');
-
                 //执行重载
                 table.reload('testReload', {
                     page: {
@@ -91,6 +90,20 @@
         $('.demoTable .layui-btn').on('click', function(){
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
+        });
+        //添加菜单
+        $("#addMenus").on("click",function () {
+            $.get("{:url('Menus/addMenus')}",function(res){
+                if (res.code!=200&&res.code){
+                    layer.msg(res.msg,{icon:2});
+                }else{
+                    layer.open({
+                        type: 1,
+                        content: res
+                    });
+                }
+            });
+           return false;
         });
     })
 </script>

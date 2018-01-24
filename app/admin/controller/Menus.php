@@ -38,4 +38,19 @@ class Menus extends Base
     public function leftMenus(){
 
     }
+
+    /**
+     * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
+     * @name 添加后台菜单
+     * @version 1.0.0
+     * @funName addMenus
+     * @return  Obj
+     */
+    public function addMenus(){
+        if ($this->request->isPost()){
+
+        }else{
+            return $this->fetch();
+        }
+    }
 }

@@ -26,7 +26,7 @@ class Base extends Controller
         //1、排除参数
         unset($data['token']);
         unset($data['sign']);
-        $secret = $data['secret'];
+        $secret = isset($data['secret'])?$data['secret']:"";
         unset($data['secret']);
         ksort($data);
         $signStr = "";

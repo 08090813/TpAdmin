@@ -1,12 +1,82 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8">
+    <title>layui.form小例子</title>
     <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css">
     <link rel="stylesheet" href="__PUBLIC__/iconfont/css/iconfont.css">
+    <link rel="stylesheet" href="layui.css" media="all">
+    <style type="text/css">
+        #addmenus{
+            margin-right: 30px;
+        }
+        #addmenus label{
+            padding: 10px 0px;
+        }
+    </style>
 </head>
 <body>
-添加菜单
+<div class="layui-container">
+    <div class="layui-row">
+        <div class="layui-col-xs5 layui-col-xs5 layui-col-md5 layui-col-md-offset3">
+            <form class="layui-form" style="padding: 20px;" id="addmenus">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">菜单图标</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="" placeholder="请输入菜单图标" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">菜单名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="" placeholder="请输入菜单名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">控制器名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="" placeholder="请输入控制器的名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">方法名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="" placeholder="请输入方法名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否菜单</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="sex" value="1" title="是" checked="">
+                        <input type="radio" name="sex" value="2" title="否">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否显示</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="sex" value="1" title="是" checked="">
+                        <input type="radio" name="sex" value="2" title="否">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="*" style="width: 46%">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary" style="width: 48%">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="__PUBLIC__/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['jquery','layer','element','form'],function () {
+        var $ = layui.layer,
+            layer = layui.layer,
+            element = layui.element,
+            form = layui.form;
+    });
+</script>
 </body>
 </html>

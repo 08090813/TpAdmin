@@ -15,6 +15,9 @@
                 width: 100%;
             }
         }
+        .layui-table-view .layui-table{
+            width: 100% !important;
+        }
     </style>
 </head>
 <body>
@@ -22,17 +25,30 @@
     <blockquote class="layui-elem-quote layui-quote-nm">
         <div class="layui-fluid">
             <div class="layui-row">
-                <div class="layui-col-xs12 layui-col-md12">
+                <div class="layui-col-xs12 layui-col-md12" style="height: 40px;">
                     <form class="layui-form layui-form-pane" action="">
                         <div class="layui-form-item">
                             <div class="layui-input-inline">
-                                <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入关键字" class="layui-input">
+                                <select name="isshow">
+                                    <option value="">请选择菜单状态</option>
+                                    <option value="1">显示</option>
+                                    <option value="2">隐藏</option>
+                                </select>
                             </div>
                             <div class="layui-input-inline">
-                                <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="菜单创建时间" class="layui-input">
+                                <select name="ismenu">
+                                    <option value="">请选择菜单类型</option>
+                                    <option value="1">菜单</option>
+                                    <option value="2">非菜单</option>
+                                </select>
                             </div>
-                            <button class="layui-btn" id="searchBtn">立即搜索</button>
-                            <button class="layui-btn" id="addMenus">添加菜单</button>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" lay-verify="title" autocomplete="off" placeholder="请输入菜单名关键字" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <button class="layui-btn" style="float: left;" lay-submit="" lay-filter="searchBtn">立即搜索</button>
+                                <button class="layui-btn" id="addMenus" style="float: left;">添加菜单</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -40,12 +56,24 @@
         </div>
     </blockquote>
 </fieldset>
-<table class="layui-hide" id="LAY_table_user" lay-filter="user" lay-size="sm"></table>
+<table class="layui-hide" id="LAY_table_user" lay-filter="menuList" lay-size="sm"></table>
+<!--模块-->
+<script type="text/html" id="isMenu">
+    <input type="checkbox" name="sex" data-id="{{d.id}}" value="{{d.is_menu}}" {{ d.is_menu==1?'checked':''}} lay-skin="switch" lay-text="是|否" lay-filter="isMenu">
+</script>
+<script type="text/html" id="isShow">
+    <input type="checkbox" name="sex" data-id="{{d.id}}" value="{{d.is_show}}" {{ d.is_show==1?'checked':''}} lay-skin="switch" lay-text="是|否" lay-filter="isShow">
+</script>
+<script type="text/html" id="barTool">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="addChildren">添加子菜单</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
 <script src="__PUBLIC__/layui/layui.js"></script>
 <script src="__ADMIN__/js/common.js"></script>
 <script type="text/javascript">
     layui.use(['jquery','layer','element','form','table'],function () {
-        var $ = layui.layer,
+        var $ = layui.jquery,
             layer = layui.layer,
             element = layui.element,
             form = layui.form;
@@ -54,53 +82,110 @@
         //方法级渲染
         table.render({
             elem: '#LAY_table_user'
-            ,url: '/demo/table/user/'
+            ,url: "{:url('Menus/getMenusList')}"
             ,cols: [[
                 {checkbox: true, fixed: true}
-                ,{field:'id', title: '编号', width:80, sort: true, fixed: true}
-                ,{field:'username', title: '名称', width:120}
-                ,{field:'sex', title: '模块', width:120}
-                ,{field:'city', title: '方法', width:120}
-                ,{field:'sign', title: '备注', width:200}
-                ,{field:'experience', title: '类型', width:120}
-                ,{field:'score', title: '创建时间', sort: true, width:160}
-                ,{fixed: 'right', width:150, align:'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                ,{field:'id', title: 'ID', width:'5%', sort: true, fixed: true}
+                ,{field:'title', title: '菜单名称', width:'10%'}
+                ,{field:'icon', title: '菜单Icon', width:'10%'}
+                ,{field:'space', title: '等级', width:'10%'}
+                ,{field:'path', title: '路径', width:'10%'}
+                ,{field:'name', title: '规则', width:'15%'}
+                ,{field:'is_menu', title: '是否菜单', width:'10%',templet: '#isMenu'}
+                ,{field:'is_show', title: '是否显示', width:'10%',templet: '#isShow'}
+                ,{fixed: 'right', width:'20%', align:'center', toolbar: '#barTool'}
             ]]
-            ,id: 'testReload'
-            ,page: true
-            ,height: 315
-        });
-
-        var $ = layui.$, active = {
-            reload: function(){
-                var demoReload = $('#demoReload');
-                //执行重载
-                table.reload('testReload', {
-                    page: {
-                        curr: 1 //重新从第 1 页开始
-                    }
-                    ,where: {
-                        key: {
-                            id: demoReload.val()
-                        }
-                    }
-                });
+            ,id: 'MenusList'
+            ,page: true,
+            response: {
+                statusName: 'code' //数据状态的字段名称，默认：code
+                ,statusCode: 200 //成功的状态码，默认：0
+                ,msgName: 'msg' //状态信息的字段名称，默认：msg
+                ,countName: 'count' //数据总数的字段名称，默认：count
+                ,dataName: 'data' //数据列表的字段名称，默认：data
+            },
+            done:function (res, curr, count) {
+//                console.log(res);
             }
-        };
-
-        $('.demoTable .layui-btn').on('click', function(){
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
         });
         //添加菜单
         $("#addMenus").on("click",function () {
-            var addmenus = layer.open({
-                type: 2,
-                title:"添加菜单",
-                content: "{:url('Menus/addMenus')}"
+            $.get("{:url('Menus/addMenus')}",{},function (res) {
+                if (res.code!=200&&res.code){
+                    layer.msg(res.msg,{icon:2});
+                }else{
+                    var addmenus = layer.open({
+                        type: 2,
+                        title:"添加菜单",
+                        content: "{:url('Menus/addMenus')}"
+                    });
+                    layer.full(addmenus);
+                }
             });
-            layer.full(addmenus);
            return false;
+        });
+        //监听提交
+        form.on('submit(searchBtn)', function(data){
+            table.reload('MenusList', {
+                where: {
+                    isshow: data.field.isshow
+                    ,ismenu: data.field.ismenu
+                    ,name: data.field.name
+                }
+            });
+            return false;
+        });
+        //监听菜单类型操作
+        form.on('switch(isMenu)', function(obj){
+            var status;
+            var msg;
+            if (obj.elem.checked){
+                status = 1;
+                msg = "已选中";
+            }else{
+                status = 2;
+                msg = "取消选中";
+            }
+            $.post("{:url('Menus/updateMenus')}",{is_menu:status,id:this.getAttribute("data-id")},function (res) {
+                layer.tips(res.msg, obj.othis);
+            })
+        });
+        //监听菜单状态操作
+        form.on('switch(isShow)', function(obj){
+            var status;
+            var msg;
+            if (obj.elem.checked){
+                status = 1;
+                msg = "已选中";
+            }else{
+                status = 2;
+                msg = "取消选中";
+            }
+            $.post("{:url('Menus/updateMenus')}",{is_show:status,id:this.getAttribute("data-id")},function (res) {
+                layer.tips(res.msg, obj.othis);
+            })
+        });
+
+        //监听工具条
+        table.on('tool(menuList)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+            if(layEvent === 'addChildren'){ //查看
+                $.get("{:url('Menus/addMenus')}",{path:data.path},function (res) {
+                    if (res.code!=200&&res.code){
+                        layer.msg(res.msg,{icon:2});
+                    }else{
+                        var addmenus = layer.open({
+                            type: 2,
+                            title:"添加菜单",
+                            content: "/index.php/admin/Menus/addMenus?path="+data.path
+                        });
+                        layer.full(addmenus);
+                    }
+                });
+            }
         });
     })
 </script>

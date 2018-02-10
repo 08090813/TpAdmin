@@ -167,4 +167,67 @@ class common
             return false;
         }
     }
+    /**
+     * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
+     * @name 获取菜单列表、
+     * @version 1.0.0
+     * @funName menusList
+     * @return  Obj
+     */
+    public function menusList($ListMenus,$pid=0,$level=0){
+        static $menus = [];
+        foreach ($ListMenus as $key=>&$val){
+            if ($val['pid'] == $pid){
+                $val['level'] = substr_count($val['path'],",");
+                $val['space'] = str_repeat("—",$val['level'])."L ";
+                $menus[] = $val;
+                $this->menusList($ListMenus,$val['id'],$level);
+            }
+        }
+        return $menus;
+    }
+
+    /**
+     * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
+     * @name layui请求数据时的ajax格式封装
+     * @version 1.0.0
+     * @funName LayuiAjaxSuccess
+     * @param int $code
+     * @param string $msg
+     * @param int $count
+     * @param $data
+     * @return  Obj
+     */
+    public function LayuiAjaxSuccess($code=400,$msg="",$data,$count=0){
+        header('Content-Type:application/json; charset=utf-8');
+        $array['code']=$code;
+        $array['msg']=$msg;
+        $array['count']=$count;
+        if ($data){
+            $array['data']=$data;
+        }
+        exit(json_encode($array));
+    }
+
+    /**
+     * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
+     * @name layui请求数据时的ajax格式封装
+     * @version 1.0.0
+     * @funName LayuiAjaxError
+     * @param int $code
+     * @param string $msg
+     * @param int $count
+     * @param $data
+     * @return  Obj
+     */
+    public function LayuiAjaxError($code=400,$msg="",$data,$count=0){
+        header('Content-Type:application/json; charset=utf-8');
+        $array['code']=$code;
+        $array['msg']=$msg;
+        $array['count']=$count;
+        if ($data){
+            $array['data']=$data;
+        }
+        exit(json_encode($array));
+    }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta charset="utf-8">
-    <title>添加菜单</title>
+    <title>添加子菜单</title>
     <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css">
     <link rel="stylesheet" href="__PUBLIC__/iconfont/css/iconfont.css">
     <link rel="stylesheet" href="layui.css" media="all">
@@ -39,7 +39,6 @@
                         <input type="text" name="controller" placeholder="请输入控制器的名称" autocomplete="off" class="layui-input">
                     </div>
                 </div>
-                <input type="hidden" name="path" value="{$path}" class="layui-input">
                 <div class="layui-form-item">
                     <label class="layui-form-label">方法名称</label>
                     <div class="layui-input-block">
@@ -83,9 +82,7 @@
                 if (data.code&&data.code!=200){
                     layer.msg(data.msg,{icon:2});
                 }else{
-                    layer.msg(data.msg,{icon:1},function () {
-                        layer.closeAll();
-                    });
+                    layer.msg(data.msg,{icon:1});
                 }
             });
             return false;

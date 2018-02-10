@@ -34,5 +34,6 @@ return [
         'AUTH_GROUP_ACCESS' => 'auth_group_access', // 用户-用户组关系表
         'AUTH_RULE'         => 'auth_rule',         // 权限规则表
         'AUTH_USER'         => 'member'             // 用户信息表
-    ]
+    ],
+    'ADMIN_LIMIT' => 15
 ];

@@ -7,12 +7,12 @@
  */
 namespace app\admin\model;
 use think\Model;
+use think\Model\relation\HasOne;
 class admin extends Model
 {
     protected $auto;
     protected $insert = [];
     protected $update = ['log_time'];
-
     /**
      * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
      * @name 登录时间自动完成

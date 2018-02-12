@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>菜单列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css">
+    <link rel="stylesheet" href="__PUBLIC__/iconfont/css/iconfont.css">
+    <style>
+        @media screen and (max-width: 450px) {
+            .layui-form-item .layui-input-inline{
+                margin: 0 0 10px 0px;
+            }
+            #searchBtn{
+                width: 100%;
+            }
+        }
+        .layui-table-view .layui-table{
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form" action="" style="padding-right: 30px;margin-top: 20px;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">规则组名</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" value="{$rule['title']}" required  lay-verify="required" placeholder="请输入规则组名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <input type="hidden" name="id" value="{$rule['id']}">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="subBtn" style="width: 100%;">立即提交</button>
+        </div>
+    </div>
+</form>
+<script src="__PUBLIC__/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['jquery','layer','element','form'],function () {
+        var $=layui.jquery,
+            form=layui.form,
+            layer=layui.layer;
+        //监听提交
+        form.on('submit(subBtn)', function(data){
+            $.post("{:url('Auth/editAuth')}",{formdata:JSON.stringify(data.field)},function (res) {
+                if (res.code&&res.code!=200){
+                    layer.msg(res.msg,{icon:2});
+                }else{
+                    layer.msg(res.msg,{icon:1},function () {
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    });
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

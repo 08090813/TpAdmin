@@ -39,34 +39,7 @@
     {block name="menus"}
     <div class="layui-side layui-bg-black" id="left-nav">
         <div class="layui-side-scroll">
-            <ul class="layui-nav layui-nav-tree"  lay-filter="menus-btn">
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a class="" href="javascript:;">
-                        <i class="layui-icon">&#xe614;</i>
-                        <span>权限管理</span>
-                    </a>
-                    <dl class="layui-nav-child">
-                        <dd>
-                            <a href="javascript:;" data-url="{:url('Menus/menusList')}" lay-id="1">
-                                <i class="layui-icon">&#xe63c;</i>
-                                <span>菜单列表</span>
-                            </a>
-                        </dd>
-                        <dd>
-                            <a href="javascript:;" data-url="{:url('index/setting')}" lay-id="2">
-                                <i class="layui-icon">&#xe63c;</i>
-                                <span>角色列表</span>
-                            </a>
-                        </dd>
-                        <dd>
-                            <a href="javascript:;" data-url="{:url('index/setting')}" lay-id="3">
-                                <i class="layui-icon">&#xe63c;</i>
-                                <span>管理员列表</span>
-                            </a>
-                        </dd>
-                    </dl>
-                </li>
-            </ul>
+            {:widget('Common/menu')}
         </div>
     </div>
     {/block}
@@ -75,14 +48,14 @@
         <div class="top-tab-tags">
 
         </div>
-        <div class="layui-tab layui-tab-brief tab-list-tags" lay-filter="tab-list" lay-allowClose="true" style="height: 97%;">
+        <div class="layui-tab layui-tab-brief tab-list-tags" lay-filter="tab-list" lay-allowClose="true" style="height: 100%;">
             <ul class="layui-tab-title">
                 <li class="layui-this">
                     <i class="layui-icon" style="top: 2px; font-size: 16px;">&#xe68e;</i>
                     <cite>系统主页</cite>
                 </li>
             </ul>
-            <div class="layui-tab-content" style="height: 85%">
+            <div class="layui-tab-content" style="height: 100%">
                 <div class="layui-tab-item layui-show" style="height: 100%;">
                     <iframe src="" frameborder="0" width="100%" height="100%"></iframe>
                 </div>

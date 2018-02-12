@@ -21,10 +21,12 @@ class AuthRule extends Model
     public function addMenus($data){
         //重新组装数据
         $map['title'] = $data['title'];
-        $map['name'] = $data['action']."/".$data['controller'];
-        $map['icon'] = $data['title'];
-        $map['ismenu'] = $data['title'];
-        $map['isshow'] = $data['title'];
+        $map['name'] = $data['controller']."/".$data['action'];
+        $map['icon'] = $data['icon'];
+        $map['is_menu'] = $data['ismenu'];
+        $map['is_show'] = $data['isshow'];
+        $map['pid'] = $data['pid'];
+        $map['path'] = $data['path'];
         $result = $this->allowField(true)->save($map);
         return $result;
     }
@@ -52,7 +54,7 @@ class AuthRule extends Model
             $map['title'] =['like',"%{$name}%"];
         }
         $map['status'] =['eq',1];
-        $menus = $this->where($map)->page($pageSize,$pagenumber)->select();
+        $menus = $this->where($map)->page($pageSize,$pagenumber)->order("id desc")->select();
         //处理菜单状态
 //        $isMenu = [1=>'是',2=>'否'];
 //        $isShow = [1=>'显示',2=>'隐藏'];

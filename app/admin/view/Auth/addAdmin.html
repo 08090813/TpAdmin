@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加管理员</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css">
+    <link rel="stylesheet" href="__PUBLIC__/iconfont/css/iconfont.css">
+    <style>
+        @media screen and (max-width: 450px) {
+            .layui-form-item .layui-input-inline{
+                margin: 0 0 10px 0px;
+            }
+            #searchBtn{
+                width: 100%;
+            }
+        }
+        .layui-table-view .layui-table{
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body>
+<fieldset class="layui-elem-field">
+    <legend>添加管理员</legend>
+    <div class="layui-field-box">
+        <div class="layui-container">
+            <div class="layui-row">
+                <div class="layui-col-xs12 layui-col-md5 layui-col-md-offset3">
+                    <form class="layui-form" action="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">账户名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="username" required  lay-verify="required" placeholder="请输入管理员账户名" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">账户密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="password" required  lay-verify="required" placeholder="请输入账户登录密码" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        {notempty name="$group"}
+                        <div class="layui-form-item" style="border-top: 1px solid #ddd;margin: 20px;padding: 10px;">
+                            <label class="layui-form-label">选择规则组</label>
+                            <div class="layui-input-block">
+                                {volist name="$group" id="vo"}
+                                <input type="radio" name="group_id" title="{$vo['title']}" value="{$vo['id']}">
+                                {/volist}
+                            </div>
+                        </div>
+                        {/notempty}
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="subBtn">立即提交</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+<script src="__PUBLIC__/layui/layui.js"></script>
+<script src="__ADMIN__/js/common.js"></script>
+<script type="text/javascript">
+    layui.use(['jquery','layer','element','form'],function () {
+        var $=layui.jquery,
+            form=layui.form,
+            layer=layui.layer;
+        //监听提交
+        form.on('submit(subBtn)', function(data){
+            $.post("{:url('Auth/addAdmin')}",data.field,function (res) {
+                if (res.code&&res.code!=200){
+                    layer.msg(res.msg,{icon:2});
+                }else{
+                    layer.msg(res.msg,{icon:1},function () {
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    });
+                }
+            });
+            return false;
+        });
+    });
+    </script>
+</body>
+</html>

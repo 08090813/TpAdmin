@@ -39,7 +39,8 @@
                         <input type="text" name="controller" placeholder="请输入控制器的名称" autocomplete="off" class="layui-input">
                     </div>
                 </div>
-                <input type="hidden" name="path" value="{$path}" class="layui-input">
+                <input type="hidden" name="path" value="{$path??'0,'}" class="layui-input">
+                <input type="hidden" name="pid" value="{$pid??0}" class="layui-input">
                 <div class="layui-form-item">
                     <label class="layui-form-label">方法名称</label>
                     <div class="layui-input-block">
@@ -84,7 +85,8 @@
                     layer.msg(data.msg,{icon:2});
                 }else{
                     layer.msg(data.msg,{icon:1},function () {
-                        layer.closeAll();
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
                     });
                 }
             });

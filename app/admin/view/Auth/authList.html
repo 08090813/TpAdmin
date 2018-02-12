@@ -29,25 +29,11 @@
                     <form class="layui-form layui-form-pane" action="">
                         <div class="layui-form-item">
                             <div class="layui-input-inline">
-                                <select name="isshow">
-                                    <option value="">请选择菜单状态</option>
-                                    <option value="1">显示</option>
-                                    <option value="2">隐藏</option>
-                                </select>
+                                <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入权限组关键字" class="layui-input">
                             </div>
-                            <div class="layui-input-inline">
-                                <select name="ismenu">
-                                    <option value="">请选择菜单类型</option>
-                                    <option value="1">菜单</option>
-                                    <option value="2">非菜单</option>
-                                </select>
-                            </div>
-                            <div class="layui-input-inline">
-                                <input type="text" name="name" lay-verify="title" autocomplete="off" placeholder="请输入菜单名关键字" class="layui-input">
-                            </div>
-                            <div class="layui-input-inline" style="width: 200px;">
+                            <div class="layui-input-inline" style="width: 220px;">
                                 <button class="layui-btn" style="float: left;" lay-submit="" lay-filter="searchBtn">立即搜索</button>
-                                <button class="layui-btn" id="addMenus" style="float: left;">添加菜单</button>
+                                <button class="layui-btn" id="addGroup" style="float: left;">添加权限组</button>
                             </div>
                         </div>
                     </form>
@@ -56,7 +42,7 @@
         </div>
     </blockquote>
 </fieldset>
-<table class="layui-hide" id="LAY_table_user" lay-filter="menuList" lay-size="sm"></table>
+<table class="layui-hide" id="LAY_table_user" lay-filter="ruleList" lay-size="sm"></table>
 <!--模块-->
 <script type="text/html" id="isMenu">
     <input type="checkbox" name="sex" data-id="{{d.id}}" value="{{d.is_menu}}" {{ d.is_menu==1?'checked':''}} lay-skin="switch" lay-text="是|否" lay-filter="isMenu">
@@ -65,9 +51,9 @@
     <input type="checkbox" name="sex" data-id="{{d.id}}" value="{{d.is_show}}" {{ d.is_show==1?'checked':''}} lay-skin="switch" lay-text="是|否" lay-filter="isShow">
 </script>
 <script type="text/html" id="barTool">
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="addChildren">添加子菜单</a>
-    <a class="layui-btn layui-btn-xs" lay-event="editMenu">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delMenu">删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="viewAuth">查看权限</a>
+    <a class="layui-btn layui-btn-xs" lay-event="editAuth">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delGroup">删除</a>
 </script>
 <script src="__PUBLIC__/layui/layui.js"></script>
 <script src="__ADMIN__/js/common.js"></script>
@@ -82,22 +68,16 @@
             async : false
         });
         //方法级渲染
-        var menusTable = table.render({
+        var ruleTable = table.render({
             elem: '#LAY_table_user'
-            ,url: "{:url('Menus/getMenusList')}"
+            ,url: "{:url('Auth/getAuthGroup')}"
             ,cols: [[
                 {checkbox: true, fixed: true}
                 ,{field:'id', title: 'ID', width:'5%', sort: true, fixed: true}
-                ,{field:'title', title: '菜单名称', width:'15%'}
-                ,{field:'icon', title: '菜单Icon', width:'10%'}
-                ,{field:'space', title: '等级', width:'10%'}
-                ,{field:'path', title: '路径', width:'10%'}
-                ,{field:'name', title: '规则', width:'15%'}
-                ,{field:'is_menu', title: '是否菜单', width:'8%',templet: '#isMenu'}
-                ,{field:'is_show', title: '是否显示', width:'8%',templet: '#isShow'}
+                ,{field:'title', title: '规则组名', width:'76%'}
                 ,{fixed: 'right', width:'15%', align:'center', toolbar: '#barTool'}
             ]]
-            ,id: 'MenusList'
+            ,id: 'ruleList'
             ,page: true,
             response: {
                 statusName: 'code' //数据状态的字段名称，默认：code
@@ -110,91 +90,58 @@
 //                console.log(res);
             }
         });
-        //添加菜单
-        $("#addMenus").on("click",function () {
-            $.get("{:url('Menus/addMenus')}",{},function (res) {
+        //添加权限组
+        $("#addGroup").on("click",function () {
+            $.get("{:url('Auth/addGroup')}",{},function (res) {
                 if (res.code!=200&&res.code){
                     layer.msg(res.msg,{icon:2});
                 }else{
                     var addmenus = layer.open({
                         type: 2,
-                        title:"添加菜单",
-                        content: "{:url('Menus/addMenus')}",
+                        title:"添加权限组",
+                        content: "{:url('Auth/addGroup')}",
                         end:function () {
-                            menusTable.reload();
+                            ruleTable.reload();
                         }
                     });
                     layer.full(addmenus);
                 }
             });
-           return false;
+            return false;
         });
         //监听提交
         form.on('submit(searchBtn)', function(data){
-            table.reload('MenusList', {
+            table.reload('ruleList', {
                 where: {
-                    isshow: data.field.isshow
-                    ,ismenu: data.field.ismenu
-                    ,name: data.field.name
+                    title: data.field.title
                 }
             });
             return false;
         });
-        //监听菜单类型操作
-        form.on('switch(isMenu)', function(obj){
-            var status;
-            var msg;
-            if (obj.elem.checked){
-                status = 1;
-                msg = "已选中";
-            }else{
-                status = 2;
-                msg = "取消选中";
-            }
-            $.post("{:url('Menus/editMenus')}",{is_menu:status,id:this.getAttribute("data-id")},function (res) {
-                layer.tips(res.msg, obj.othis);
-            })
-        });
-        //监听菜单状态操作
-        form.on('switch(isShow)', function(obj){
-            var status;
-            var msg;
-            if (obj.elem.checked){
-                status = 1;
-                msg = "已选中";
-            }else{
-                status = 2;
-                msg = "取消选中";
-            }
-            $.post("{:url('Menus/editMenus')}",{is_show:status,id:this.getAttribute("data-id")},function (res) {
-                layer.tips(res.msg, obj.othis);
-            })
-        });
-
         //监听工具条
-        table.on('tool(menuList)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        table.on('tool(ruleList)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
             var data = obj.data; //获得当前行数据
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
             var tr = obj.tr; //获得当前行 tr 的DOM对象
 
-            if(layEvent === 'addChildren'){ //查看
-                $.get("{:url('Menus/addMenus')}",{path:data.path},function (res) {
+            if(layEvent === 'viewAuth'){ //查看
+                $.get("{:url('Auth/editGroup')}",{id:data.id},function (res) {
                     if (res.code!=200&&res.code){
                         layer.msg(res.msg,{icon:2});
                     }else{
                         var addmenus = layer.open({
                             type: 2,
-                            title:"添加菜单",
-                            content: "/index.php/admin/Menus/addMenus?id="+data.id,
+                            title:"查看权限组",
+                            content: "/index.php/admin/Auth/editGroup?id="+data.id,
                             end:function () {
-                                menusTable.reload();
+                                ruleTable.reload();
                             }
                         });
                         layer.full(addmenus);
                     }
                 });
-            }else if (layEvent === 'delMenu'){
-                $.get("{:url('Menus/delMenus')}",{ids:data.id},function (res) {
+            }else if (layEvent === 'delGroup'){
+                $.get("{:url('Auth/delGroup')}",{ids:data.id},function (res) {
                     if (res.code!=200&&res.code){
                         layer.msg(res.msg,{icon:2});
                     }else{
@@ -202,27 +149,21 @@
                         layer.msg(res.msg,{icon:1});
                     }
                 });
-            }else if (layEvent === 'editMenu'){
-                $.get("{:url('Menus/editMenus')}",{id:data.id},function (res) {
+            }else if (layEvent === 'editAuth'){
+                $.get("{:url('Auth/editAuth')}",{id:data.id},function (res) {
                     if (res.code!=200&&res.code){
                         layer.msg(res.msg,{icon:2});
                     }else{
                         var editmenus = layer.open({
                             type: 2,
-                            title:"编辑菜单",
-                            content: "/index.php/admin/Menus/editMenus?id="+data.id,
+                            title:"编辑规则组",
+                            area:['300px','180px'],
+                            content: "/index.php/admin/Auth/editAuth?id="+data.id,
                             end:function () {
-                                menusTable.reload();
+                                ruleTable.reload();
                             }
                         });
-                        layer.full(editmenus);
                     }
-//                    if (res.code!=200&&res.code){
-//                        layer.msg(res.msg,{icon:2});
-//                    }else{
-//                        obj.del();
-//                        layer.msg(res.msg,{icon:1});
-//                    }
                 });
             }
         });

@@ -87,9 +87,14 @@ class Menus extends Base
                 $this->common->ajaxError(400,"菜单添加失败！");
             }
         }else{
-            $path = Request::instance()->input("get.path");
-            if ($path){
-                $this->assign("path",$path);
+            $id = input("get.id",0);
+            if ($id){
+                $auth = new AuthRule();
+                $ids = $auth->where(array('id'=>['eq',$id]))->find();
+                if ($ids){
+                    $this->assign("path",$ids['path'].$id.",");
+                    $this->assign("pid",$ids['id']);
+                }
             }
             return $this->fetch();
         }
@@ -102,17 +107,48 @@ class Menus extends Base
      * @funName updateMenus
      * @return  Obj
      */
-    public function updateMenus(){
+    public function editMenus(){
         if ($this->request->isPost()){
+            //组装数据
             $menus = new AuthRule();
             $result = $menus->allowField(true)->save(Request::instance()->param(),input("post.id"));
             if ($result){
-                $this->common->ajaxSuccess(200,"已切换状态");
+                $this->common->ajaxSuccess(200,"更新成功");
             }else{
                 $this->common->ajaxError(400,"操作失败了哟");
             }
         }else{
-            $this->fetch();
+            $id = input("get.id",0);
+            if ($id){
+                $auth = new AuthRule();
+                $menu = $auth->where(array('id'=>['eq',$id]))->find();
+                $menu['action'] = ltrim(strstr($menu['name'],"/"),"/");
+                $menu['controller'] = strstr($menu['name'],"/",true);
+                $this->assign("menu",$menu);
+            }
+            return $this->fetch();
+        }
+    }
+
+    /**
+     * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
+     * @name 批量删除或者单个删除
+     * @version 1.0.0
+     * @param ids 菜单id 如1,2,32,4、使用逗号分隔
+     * @funName delMenus
+     * @return  Obj
+     */
+    public function delMenus(){
+        $ids = input("get.ids","");
+        $ids = explode(",",$ids);
+        //组装条件
+        $map['id'] = ['in',$ids];
+        $auth = new AuthRule();
+        $result = $auth->where($map)->delete();
+        if ($result){
+            $this->common->ajaxSuccess(200,"删除成功！");
+        }else{
+            $this->common->ajaxError(400,"删除失败！");
         }
     }
 }

@@ -1,0 +1,32 @@
+<ul class="layui-nav layui-nav-tree"  lay-filter="menus-btn">
+    {volist name="menus" id="data"}
+        <li class="layui-nav-item layui-nav-itemed">
+            <a class="" href="javascript:;">
+                <i class="layui-icon">&#xe614;</i>
+                <span>{$data['title']}</span>
+            </a>
+            <dl class="layui-nav-child">
+                {notempty name="$data.child"}{volist name="$data.child" id="vo"}
+                <dd>
+                    <a href="javascript:;" data-url="{$vo['url']}" lay-id="{$vo['id']}">
+                        <i class="layui-icon">&#xe63c;</i>
+                        <span>{$vo['title']}</span>
+                    </a>
+                </dd>
+                {/volist}{/notempty}
+                <!--<dd>-->
+                    <!--<a href="javascript:;" data-url="{:url('index/setting')}" lay-id="2">-->
+                        <!--<i class="layui-icon">&#xe63c;</i>-->
+                        <!--<span>角色列表</span>-->
+                    <!--</a>-->
+                <!--</dd>-->
+                <!--<dd>-->
+                    <!--<a href="javascript:;" data-url="{:url('index/setting')}" lay-id="3">-->
+                        <!--<i class="layui-icon">&#xe63c;</i>-->
+                        <!--<span>管理员列表</span>-->
+                    <!--</a>-->
+                <!--</dd>-->
+            <!--</dl>-->
+        </li>
+    {/volist}
+</ul>

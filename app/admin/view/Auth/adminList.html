@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>菜单列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css">
+    <link rel="stylesheet" href="__PUBLIC__/iconfont/css/iconfont.css">
+    <style>
+        @media screen and (max-width: 450px) {
+            .layui-form-item .layui-input-inline{
+                margin: 0 0 10px 0px;
+            }
+            #searchBtn{
+                width: 100%;
+            }
+        }
+        .layui-table-view .layui-table{
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title">
+    <blockquote class="layui-elem-quote layui-quote-nm">
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <div class="layui-col-xs12 layui-col-md12" style="height: 40px;">
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                                <input type="text" name="username" lay-verify="title" autocomplete="off" placeholder="请输入管理员关键字" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline" style="width: 220px;">
+                                <button class="layui-btn" style="float: left;" lay-submit="" lay-filter="searchBtn">立即搜索</button>
+                                <button class="layui-btn" id="addAdmin" style="float: left;">添加管理员</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </blockquote>
+</fieldset>
+<table class="layui-hide" id="LAY_table_user" lay-filter="ruleList" lay-size="sm"></table>
+<!--模块-->
+<script type="text/html" id="isMenu">
+    <input type="checkbox" name="sex" data-id="{{d.id}}" value="{{d.is_menu}}" {{ d.is_menu==1?'checked':''}} lay-skin="switch" lay-text="是|否" lay-filter="isMenu">
+</script>
+<script type="text/html" id="isShow">
+    <input type="checkbox" name="sex" data-id="{{d.id}}" value="{{d.is_show}}" {{ d.is_show==1?'checked':''}} lay-skin="switch" lay-text="是|否" lay-filter="isShow">
+</script>
+<script type="text/html" id="barTool">
+    <a class="layui-btn layui-btn-xs" lay-event="editAdmin">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delAdmin">删除</a>
+</script>
+<script src="__PUBLIC__/layui/layui.js"></script>
+<script src="__ADMIN__/js/common.js"></script>
+<script type="text/javascript">
+    layui.use(['jquery','layer','element','form','table'],function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            element = layui.element,
+            form = layui.form
+            ,table = layui.table;
+        $.ajaxSetup({
+            async : false
+        });
+        //方法级渲染
+        var ruleTable = table.render({
+            elem: '#LAY_table_user'
+            ,url: "{:url('Auth/gwtAdminList')}"
+            ,cols: [[
+                {checkbox: true, fixed: true}
+                ,{field:'id', title: 'ID', width:'5%', sort: true, fixed: true}
+                ,{field:'username', title: '账户名', width:'36%'}
+                ,{field:'title', title: '所属权限组', width:'40%'}
+                ,{fixed: 'right', width:'15%', align:'center', toolbar: '#barTool'}
+            ]]
+            ,id: 'ruleList'
+            ,page: true,
+            response: {
+                statusName: 'code' //数据状态的字段名称，默认：code
+                ,statusCode: 200 //成功的状态码，默认：0
+                ,msgName: 'msg' //状态信息的字段名称，默认：msg
+                ,countName: 'count' //数据总数的字段名称，默认：count
+                ,dataName: 'data' //数据列表的字段名称，默认：data
+            },
+            done:function (res, curr, count) {
+//                console.log(res);
+            }
+        });
+        //添加权限组
+        $("#addAdmin").on("click",function () {
+            $.get("{:url('Auth/addAdmin')}",{},function (res) {
+                if (res.code!=200&&res.code){
+                    layer.msg(res.msg,{icon:2});
+                }else{
+                    var addadmin = layer.open({
+                        type: 2,
+                        title:"添加管理员",
+                        content: "{:url('Auth/addAdmin')}",
+                        end:function () {
+                            ruleTable.reload();
+                        }
+                    });
+                    layer.full(addadmin);
+                }
+            });
+            return false;
+        });
+        //监听提交
+        form.on('submit(searchBtn)', function(data){
+            table.reload('ruleList', {
+                where: {
+                    username: data.field.username
+                }
+            });
+            return false;
+        });
+        //监听工具条
+        table.on('tool(ruleList)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+            if (layEvent === 'delAdmin'){
+                $.get("{:url('Auth/delAdmin')}",{ids:data.id},function (res) {
+                    if (res.code!=200&&res.code){
+                        layer.msg(res.msg,{icon:2});
+                    }else{
+                        obj.del();
+                        layer.msg(res.msg,{icon:1});
+                    }
+                });
+            }else if (layEvent === 'editAdmin'){
+                $.get("{:url('Auth/editAdmin')}",{id:data.id},function (res) {
+                    if (res.code!=200&&res.code){
+                        layer.msg(res.msg,{icon:2});
+                    }else{
+                        var editmenus = layer.open({
+                            type: 2,
+                            title:"编辑管理员",
+                            area:['500px','350px'],
+                            content: "/index.php/admin/Auth/editAdmin?id="+data.id,
+                            end:function () {
+                                ruleTable.reload();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    })
+</script>
+</body>
+</html>

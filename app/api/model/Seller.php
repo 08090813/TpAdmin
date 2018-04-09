@@ -1,33 +1,31 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/1/22
- * Time: 23:53
+ * @Author 张超.
+ * @Copyright http://www.zhangchao.name
+ * @Email 416716328@qq.com
+ * @DateTime 2018/3/1 16:59
+ * @Desc
  */
+
 namespace app\api\model;
-use think\Model;
 use app\api\validate;
 use think\Loader;
 use my\helper;
+use think\Model;
 use app\common\controller\common;
-class Users extends Model
+
+class Seller extends Model
 {
     protected $help;
     public function __construct($data = [])
     {
-        parent::__construct($data);
         $this->help = new helper();
+        parent::__construct($data);
     }
-
-    /**
-     * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
-     * @name 用户注册
-     * @version 1.0.0
-     * @funName register
-     * @return  Obj
-     */
-    public function register($data){
+    public function applySeller($data){
+        $result = $this->insert($data);
+    }
+    public function registerSeller($data){
         $users = $this->where("phone",$data['phone'])->find();
         if ($users){
             return "您已经注册过、您可以选择直接登录或找回密码！";
@@ -42,7 +40,7 @@ class Users extends Model
         }
         //生成用户名
         $data['username'] = "DeiQuan".date("YmdHis");
-        $validate = Loader::validate('Users');
+        $validate = Loader::validate('Seller');
         if (!$validate->check($data)){
             return $validate->getError();
         }
@@ -53,7 +51,6 @@ class Users extends Model
             return "系统繁忙、请稍后再试！";
         }
     }
-
     /**
      * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
      * @name 使用password_hash加密密码
@@ -64,14 +61,6 @@ class Users extends Model
     public function setPasswordAttr($value){
         return password_hash($value,PASSWORD_BCRYPT);
     }
-
-    /**
-     * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
-     * @name 用户登录
-     * @version 1.0.0
-     * @funName doLogin
-     * @return  Obj
-     */
     public function doLogin($data){
         $result = $this->where(array('phone'=>['eq',$data['phone']]))->find();
         if (!$result){

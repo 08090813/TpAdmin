@@ -9,8 +9,20 @@ namespace app\api\controller;
 use think\Controller;
 use \Firebase\JWT\JWT;
 use think\config;
+use my\helper;
+use think\Request;
+use app\common\controller\common;
 class Base extends Controller
 {
+    protected $help;
+    protected $common;
+    public function __construct(Request $request = null)
+    {
+        $this->help = new helper();
+        $this->common = new common();
+        parent::__construct($request);
+    }
+
     /**
      * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
      * @name 验证sign和生成sign返回

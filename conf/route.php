@@ -21,3 +21,6 @@ Route::group(['method'=>"post"],function (){
     Route::post("user/sender","api/user/sender");//用户发送验证码
     Route::post("user/register","api/user/register");//用户注册
 });
+//多层路由访问
+Route::post('system/pushData','api/system.Seller/pushData');
+Route::post('system/testfile','api/system.Seller/testfile');

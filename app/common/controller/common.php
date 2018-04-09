@@ -12,6 +12,7 @@ use think\Request;
 use think\config;
 use tencent\Sender;
 use my\helper;
+use qcloud;
 class common
 {
     protected $secretKey = "";
@@ -229,5 +230,21 @@ class common
             $array['data']=$data;
         }
         exit(json_encode($array));
+    }
+
+    /**
+     * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
+     * @name 文件上传
+     * @version 1.0.0
+     * @funName AppFile
+     * @return  Obj
+     */
+    public function AppFile(){
+        Loader::import("");
+        $cosClient = new qcloud\Cos\Client(
+            ['region' => getenv('COS_REGION'),'credentials'=>
+            ['secretId'=>'AKIDyufFdvy63rTtAFpwiS6jLlyHUaimpT8f','secretKey' =>'W1PsEONNCF1kz4xdAe1DD1d4EF4h8FD2']
+        ]);
+        return $cosClient;
     }
 }

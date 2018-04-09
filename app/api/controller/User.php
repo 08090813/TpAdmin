@@ -42,9 +42,14 @@ class User extends Controller
      * @return  Obj
      */
     public function login(){
-        return "123";
+        $users = new Users();
+        $result = $users->doLogin(Request::instance()->param());
+        if (is_array($result)){
+            $this->common->ajaxSuccess(200,"登录成功！",$result);
+        }else{
+            $this->common->ajaxError(400,$result);
+        }
     }
-
     /**
      * @author by 张超 <Email:416716328@qq.com web:http://www.zhangchao.name>
      * @name 用户发送验证码
@@ -57,16 +62,11 @@ class User extends Controller
             //验证码还在有效期
             $this->common->ajaxError(400,"您的验证码还在有效期、切勿重复操作！");
         }
-        //检查用户是都已经注册
-        $phoneIsSet = db("users")->where("phone",input("post.phone"))->find();
-        if ($phoneIsSet){
-            $this->common->ajaxError(400,"您的手机号已经注册、可直接登录或找回密码！");
-        }
         //生成验证码
         $capcha = (int)rand(1000,9999);
         //存入数据库
         $data['desc']="用户注册发送验证码";
-        $data['captcha']=$capcha;
+        $data['captcha']=(int)$capcha;
         $data['phone']=input("post.phone","");
         $data['date']=date("Y-m-d H:i:s");
         $sendSms = db("smsLog")->insert($data);
@@ -89,6 +89,11 @@ class User extends Controller
      * @return  Obj
      */
     public function register(){
+        //检查用户是都已经注册
+        $phoneIsSet = db("users")->where("phone",input("post.phone"))->find();
+        if ($phoneIsSet){
+            $this->common->ajaxError(400,"您的手机号已经注册、可直接登录或找回密码！");
+        }
         $user = new Users();
         $result = $user->register(Request::instance()->param());
         if ($result===true){
